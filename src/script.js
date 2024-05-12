@@ -40,10 +40,41 @@ const earthMaterial = new THREE.ShaderMaterial({
         uDayTexture: new THREE.Uniform(earthDayTexture),
         uNightTexture: new THREE.Uniform(earthNightTexture),
         uSpecularCloudsTexture: new THREE.Uniform(earthSpecularCloudsTexture),
+        uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
     },
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
+
+/**
+ * Sun
+ */
+const sunSpherical = new THREE.Spherical(1, Math.PI * 0.5, 0.5); // 1 is the Phi, bottom-up, third parameter is Theta
+const sunDirection = new THREE.Vector3();
+
+// Debug
+const debugSun = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+);
+scene.add(debugSun);
+
+// Update
+const updateSun = () => {
+    // Sun direction
+    sunDirection.setFromSpherical(sunSpherical);
+
+    // Debug
+    debugSun.position.copy(sunDirection).multiplyScalar(5); // multiplyScalar makes the sun go farther from where it spawns, which is inside the earth
+
+    // Uniforms
+    earthMaterial.uniforms.uSunDirection.value.copy(sunDirection);
+};
+updateSun();
+
+// Tweaks
+gui.add(sunSpherical, "phi").min(0).max(Math.PI).onChange(updateSun);
+gui.add(sunSpherical, "theta").min(-Math.PI).max(Math.PI).onChange(updateSun);
 
 /**
  * Sizes
