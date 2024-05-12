@@ -43,6 +43,13 @@ void main()
     // color = atmosphereColor; // when it's toward the sun, we get the blue color, otherwise we get orange on the dark side
     color = mix(color, atmosphereColor, fresnel * atmosphereDayMix); // fresnel multiplied by atmosphereDayMix fixes the issue where atmosphere color is way too strong on the dark side where we have no light and shouldn't have a visible atmosphere
 
+    // Speculare
+    vec3 reflection = reflect(- uSunDirection, normal);
+    float specular = - dot(reflection, viewDirection);
+    specular = max(specular, 0.0);
+    specular = pow(specular, 32.0);
+    color += vec3(specular);
+
     // Final color
     gl_FragColor = vec4(color, 1.0);
     #include <tonemapping_fragment>
