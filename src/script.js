@@ -3,6 +3,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import GUI from "lil-gui";
 import earthVertexShader from "./shaders/earth/vertex.glsl";
 import earthFragmentShader from "./shaders/earth/fragment.glsl";
+import AtmosphereVertexShader from "./shaders/atmosphere/vertex.glsl";
+import AtmosphereFragmentShader from "./shaders/atmosphere/fragment.glsl";
 
 /**
  * Base
@@ -30,9 +32,15 @@ gui.addColor(earthParameters, "atmosphereDayColor").onChange(() => {
     earthMaterial.uniforms.uAtmosphereDayColor.value.set(
         earthParameters.atmosphereDayColor
     );
+    atmosphereMaterial.uniforms.uAtmosphereDayColor.value.set(
+        earthParameters.atmosphereDayColor
+    );
 });
 gui.addColor(earthParameters, "atmosphereTwilightColor").onChange(() => {
     earthMaterial.uniforms.uAtmosphereTwilightColor.value.set(
+        earthParameters.atmosphereTwilightColor
+    );
+    atmosphereMaterial.uniforms.uAtmosphereTwilightColor.value.set(
         earthParameters.atmosphereTwilightColor
     );
 });
@@ -70,6 +78,27 @@ const earthMaterial = new THREE.ShaderMaterial({
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
 
+// Atmosphere
+const atmosphereMaterial = new THREE.ShaderMaterial({
+    vertexShader: AtmosphereVertexShader,
+    fragmentShader: AtmosphereFragmentShader,
+    transparent: true,
+    uniforms: {
+        uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
+        uAtmosphereDayColor: new THREE.Uniform(
+            new THREE.Color(earthParameters.atmosphereDayColor)
+        ),
+        uAtmosphereTwilightColor: new THREE.Uniform(
+            new THREE.Color(earthParameters.atmosphereTwilightColor)
+        ),
+    },
+    side: THREE.BackSide, // we can only see the back of the sphere from our point of view and we see the earth on the front-side
+});
+
+const atmosphere = new THREE.Mesh(earthGeometry, atmosphereMaterial);
+atmosphere.scale.set(1.04, 1.04, 1.04);
+scene.add(atmosphere);
+
 /**
  * Sun
  */
@@ -93,6 +122,7 @@ const updateSun = () => {
 
     // Uniforms
     earthMaterial.uniforms.uSunDirection.value.copy(sunDirection);
+    atmosphereMaterial.uniforms.uSunDirection.value.copy(sunDirection);
 };
 updateSun();
 
