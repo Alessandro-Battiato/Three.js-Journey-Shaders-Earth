@@ -48,7 +48,10 @@ void main()
     float specular = - dot(reflection, viewDirection);
     specular = max(specular, 0.0);
     specular = pow(specular, 32.0);
-    color += vec3(specular);
+    specular *= specularCloudsColor.r; // this prevents the light reflection from appearing above the continents, it's like it has a negative z-index
+
+    vec3 specularColor = mix(vec3(1.0), atmosphereColor, fresnel);
+    color += specular * specularColor;
 
     // Final color
     gl_FragColor = vec4(color, 1.0);
