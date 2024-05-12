@@ -41,7 +41,7 @@ void main()
     float atmosphereDayMix = smoothstep(- 0.5, 1.0, sunOrientation);
     vec3 atmosphereColor = mix(uAtmosphereTwilightColor, uAtmosphereDayColor, atmosphereDayMix);
     // color = atmosphereColor; // when it's toward the sun, we get the blue color, otherwise we get orange on the dark side
-    color = mix(color, atmosphereColor, fresnel);
+    color = mix(color, atmosphereColor, fresnel * atmosphereDayMix); // fresnel multiplied by atmosphereDayMix fixes the issue where atmosphere color is way too strong on the dark side where we have no light and shouldn't have a visible atmosphere
 
     // Final color
     gl_FragColor = vec4(color, 1.0);
