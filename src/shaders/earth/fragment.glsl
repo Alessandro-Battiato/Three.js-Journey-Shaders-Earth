@@ -28,6 +28,7 @@ void main()
 
     // Clouds
     float cloudsMix = smoothstep(0.3, 1.0, specularCloudsColor.g); // The first parameter basically controls how many clouds should be seen on the earth, on the technical side, we are stating how much of the data texture which contains the clouds we want to take and use
+    cloudsMix *= dayMix; // this makes clouds disappear on the dark side so you can clearly see the city lights without needing to darken the clouds which would have occluded the city lights as well
     color = mix(color, vec3(1.0), cloudsMix);
 
     // Final color
