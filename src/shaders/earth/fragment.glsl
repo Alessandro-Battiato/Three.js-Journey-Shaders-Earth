@@ -33,10 +33,15 @@ void main()
     cloudsMix *= dayMix; // this makes clouds disappear on the dark side so you can clearly see the city lights without needing to darken the clouds which would have occluded the city lights as well
     color = mix(color, vec3(1.0), cloudsMix);
 
+    // Fresnel
+    float fresnel = dot(viewDirection, normal) + 1.0;
+    fresnel = pow(fresnel, 2.0);
+
     // Atmosphere
     float atmosphereDayMix = smoothstep(- 0.5, 1.0, sunOrientation);
     vec3 atmosphereColor = mix(uAtmosphereTwilightColor, uAtmosphereDayColor, atmosphereDayMix);
-    color = atmosphereColor; // when it's toward the sun, we get the blue color, otherwise we get orange on the dark side
+    // color = atmosphereColor; // when it's toward the sun, we get the blue color, otherwise we get orange on the dark side
+    color = mix(color, atmosphereColor, fresnel);
 
     // Final color
     gl_FragColor = vec4(color, 1.0);
