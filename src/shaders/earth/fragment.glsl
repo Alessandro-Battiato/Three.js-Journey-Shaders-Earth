@@ -10,7 +10,18 @@ void main()
 {
     vec3 viewDirection = normalize(vPosition - cameraPosition);
     vec3 normal = normalize(vNormal);
-    vec3 color = vec3(vUv, 1.0);
+    vec3 color = vec3(0.0);
+
+    // Sun orientation
+    vec3 uSunDirection = vec3(0.0, 0.0, 1.0);
+    float sunOrientation = dot(uSunDirection, normal); // dot product
+    color = vec3(sunOrientation);
+
+    // Day / night color
+    float dayMix = sunOrientation;
+    vec3 dayColor = texture(uDayTexture, vUv).rgb;
+    vec3 nightColor = texture(uNightTexture, vUv).rgb;
+    color = mix(dayColor, nightColor, dayMix);
 
     // Final color
     gl_FragColor = vec4(color, 1.0);
