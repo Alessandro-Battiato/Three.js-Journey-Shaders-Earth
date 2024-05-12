@@ -18,10 +18,10 @@ void main()
     color = vec3(sunOrientation);
 
     // Day / night color
-    float dayMix = sunOrientation;
+    float dayMix = smoothstep(- 0.25, 0.5, sunOrientation);
     vec3 dayColor = texture(uDayTexture, vUv).rgb;
     vec3 nightColor = texture(uNightTexture, vUv).rgb;
-    color = mix(dayColor, nightColor, dayMix);
+    color = mix(nightColor, dayColor, dayMix); // if value is 1 then we get the day, otherwise we get the night
 
     // Final color
     gl_FragColor = vec4(color, 1.0);
